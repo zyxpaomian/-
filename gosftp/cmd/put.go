@@ -20,18 +20,27 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"path"
+	"bufio"
 )
 var putCmd = &cobra.Command{
 	Use:   "put",
 	Short: "用于测试sftp账号put(写权限)",
 	Long: `用于测试sftp账号是否具有写权限，使用账号密码登录sftp账号并上传空文件到指定子目录. EP:
-	./gosftp put -S [CA,FS,BC] -U XXX -P XXX -D dir `,
+	./gosftp put -S [CA,FS,BC] -U XXX -D dir `,
 	Run: func(cmd *cobra.Command, args []string) {
 		sftpServerMap := make(map[string]string)
 
 		sftpServerMap["CA"] = "sftpca.app.prd"
 		sftpServerMap["FS"] = "sftpfs.app.prd"
 		sftpServerMap["BC"] = "sftpbc.app.prd"
+
+		input := bufio.NewScanner(os.Stdin)
+		fmt.Printf("请输入SFTP密码:\n")
+    	for input.Scan() {
+        	line := input.Text()
+        	password = line
+        	break
+  		}	
 
 		if len(sftpserver) == 0 || len(user) == 0 || len(password) == 0 || len(subdir) == 0 {
 			fmt.Printf("参数错误: sftp服务器, sftp用户名, sftp用户密码, 上传子目录均不能为空!\n")

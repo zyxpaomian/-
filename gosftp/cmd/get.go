@@ -24,6 +24,7 @@ import (
 	"path"
 	"time"
 	"net"
+	"bufio"
 )
 
 var (
@@ -83,13 +84,21 @@ var getCmd = &cobra.Command{
 	Use:   "get",
 	Short: "用于测试sftp账号get(读权限)",
 	Long: `用于测试sftp账号是否具有读权限，使用账号密码登录sftp账号并下载空文件到本地. EP:
-	./gosftp get -S [CA,FS,BC] -U XXX -P XXX -D dir`,
+	./gosftp get -S [CA,FS,BC] -U XXX -D dir`,
 	Run: func(cmd *cobra.Command, args []string) {
 		sftpServerMap := make(map[string]string)
 
 		sftpServerMap["CA"] = "sftpca.app.prd"
 		sftpServerMap["FS"] = "sftpfs.app.prd"
 		sftpServerMap["BC"] = "sftpbc.app.prd"
+
+		input := bufio.NewScanner(os.Stdin)
+		fmt.Printf("请输入SFTP密码:\n")
+    	for input.Scan() {
+        	line := input.Text()
+        	password = line
+        	break
+  		}		
 
 		if len(sftpserver) == 0 || len(user) == 0 || len(password) == 0 || len(subdir) == 0 {
 			fmt.Printf("参数错误: sftp服务器, sftp用户名, sftp用户密码, 下载子目录均不能为空!\n")
@@ -138,6 +147,6 @@ func init() {
 	rootCmd.AddCommand(getCmd)
 	getCmd.Flags().StringVarP(&sftpserver, "sftpserver", "S", "", "sftp服务器")
 	getCmd.Flags().StringVarP(&user, "user", "U", "", "sftp用户名")
-	getCmd.Flags().StringVarP(&password, "password", "P", "", "sftp密码")
+	//getCmd.Flags().StringVarP(&password, "password", "P", "", "sftp密码")
 	getCmd.Flags().StringVarP(&subdir, "subdir", "D", "", "下载的SFTP子目录")
 }
